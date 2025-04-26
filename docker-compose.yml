@@ -14,6 +14,7 @@ services:
       WORDPRESS_DB_NAME: wordpressdb
       WORDPRESS_CONFIG_EXTRA: |
         define('WP_ENVIRONMENT_TYPE', '${ENVIRONMENT:-production}');
+        define('WP_DEVELOPMENT_MODE', '${WP_DEVELOPMENT_MODE:-false}');
         define('HEADLESS_SECRET', '${HEADLESS_SECRET}');
         define('HEADLESS_URL', '${HEADLESS_URL}');
         define('GRAPHQL_JWT_AUTH_SECRET_KEY', '${GRAPHQL_JWT_AUTH_SECRET_KEY}');
