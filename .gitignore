@@ -1,3 +1,4 @@
 .env
 .DS_Store
 /plugins/appPassOverride.php
+/plugins/redirection
