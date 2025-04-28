@@ -55,6 +55,12 @@ services:
         define('GRAPHQL_JWT_AUTH_CORS_ENABLE', true);
         define('WP_SITEURL', '${WP_SITEURL}');
         define('WP_HOME', '${WP_HOMEURL}');
+        define('FORCE_SSL_ADMIN', false);
+        define('WP_HTTP_BLOCK_EXTERNAL', false);
+        define('WP_MEMORY_LIMIT', '256M');
+        // Increase PHP timeouts
+        @ini_set('max_execution_time', '120');
+        @ini_set('post_max_size', '64M');
     volumes:
       - wordpress:/var/www/html
     networks:
