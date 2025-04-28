@@ -56,8 +56,8 @@ services:
         define('WP_HOME', '${WP_HOMEURL}');
     volumes:
       - wordpress:/var/www/html
-      - ./themes:/var/www/html/wp-content/themes
-      - ./plugins:/var/www/html/wp-content/plugins
+      # - ./themes:/var/www/html/wp-content/themes
+      # - ./plugins:/var/www/html/wp-content/plugins
     networks:
       - web
       - backend
