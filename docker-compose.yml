@@ -1,12 +1,43 @@
 name: wp_swarm
 
 services:
-
+  reverse-proxy:
+    # The official v3 Traefik docker image
+    image: traefik:v3.3
+    # Enables the web UI and tells Traefik to listen to docker
+    ports:
+      # The HTTP port
+      - "80:80"
+      # HTTPS port
+      - "443:443"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
+    command:
+      --api=true
+      --providers.docker
+      --providers.docker.exposedbydefault=false
+      --providers.file.directory=/etc/traefik
+      --entrypoints.webhttp.address=:80
+      --entrypoints.webhttps.address=:443
+      --entrypoints.webhttps.http.tls=true
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./certs:/certs
+      - ./traefik/config:/etc/traefik
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`${TRAEFIK_HOST_URL}`)"
+      - "traefik.http.routers.dashboard.entrypoints=webhttps"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.middlewares=auth"
+      - "traefik.http.middlewares.auth.basicauth.users=${TREAFIK_USERNAME}:${TRAEFIK_ENCRY_PW}"
+      # - "traefik.http.routers.dashboard.tls=true"
   wordpress:
     image: wordpress
     restart: always
-    ports:
-      - 8080:80
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: root
@@ -19,10 +50,20 @@ services:
         define('HEADLESS_URL', '${HEADLESS_URL}');
         define('GRAPHQL_JWT_AUTH_SECRET_KEY', '${GRAPHQL_JWT_AUTH_SECRET_KEY}');
         define('GRAPHQL_JWT_AUTH_CORS_ENABLE', true);
+        define('WP_SITEURL', '${WP_SITEURL}');
+        define('WP_HOME', '${WP_HOMEURL}');
     volumes:
       - wordpress:/var/www/html
       - ./themes:/var/www/html/wp-content/themes
       - ./plugins:/var/www/html/wp-content/plugins
+    networks:
+      - web
+      - backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wordpress.rule=Host(`${WP_HOST_URL}`)"
+      - "traefik.http.routers.wordpress.entrypoints=webhttps"
+      - "traefik.http.services.wordpress.loadbalancer.server.port=80"
 
   db:
     image: mysql:8.0
@@ -32,6 +73,13 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - db:/var/lib/mysql
+    networks:
+      - backend
+
+networks:
+  web:
+  backend:
+    internal: true
 
 volumes:
   wordpress:
