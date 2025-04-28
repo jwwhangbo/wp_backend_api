@@ -1,15 +1,9 @@
 tls:
   certificates:
-    - certFile: /certs/jwwhangbo_cert.crt
-      keyFile: /certs/jwwhangbo_key.key
+    - certFile: /certs/cf_cert.crt
+      keyFile: /certs/cf_key.key
   stores:
     default:
       defaultCertificate:
-        certFile: /certs/jwwhangbo_cert.crt
-        keyFile: /certs/jwwhangbo_key.key
-  options:
-    default:
-      clientAuth:
-        caFiles:
-          - /certs/origin_ca_rsa_root.pem
-        clientAuthType: RequireAndVerifyClientCert
+        certFile: /certs/cf_cert.crt
+        keyFile: /certs/cf_key.key
