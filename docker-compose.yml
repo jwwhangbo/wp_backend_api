@@ -21,8 +21,8 @@ services:
       --entrypoints.webhttp.address=:80
       --entrypoints.webhttps.address=:443
       --entrypoints.webhttps.http.tls=true
-      --entrypoints.webhttps.http.tls.domains[0].main=jwwhangbo.com
-      --entrypoints.webhttps.http.tls.domains[0].sans=wp.jwwhangbo.com,traefik.jwwhangbo.com
+      # --entrypoints.webhttps.http.tls.domains[0].main=jwwhangbo.com
+      # --entrypoints.webhttps.http.tls.domains[0].sans=wp.jwwhangbo.com,traefik.jwwhangbo.com
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
