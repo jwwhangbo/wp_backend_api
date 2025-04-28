@@ -14,6 +14,7 @@ services:
       - "8080:8080"
     command:
       --api=true
+      --log.level=INFO
       --providers.docker
       --providers.docker.exposedbydefault=false
       --providers.file.directory=/etc/traefik
@@ -56,8 +57,6 @@ services:
         define('WP_HOME', '${WP_HOMEURL}');
     volumes:
       - wordpress:/var/www/html
-      # - ./themes:/var/www/html/wp-content/themes
-      # - ./plugins:/var/www/html/wp-content/plugins
     networks:
       - web
       - backend
