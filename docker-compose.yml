@@ -16,7 +16,6 @@ services:
       --api=true
       --log.level=INFO
       --providers.docker
-      --providers.docker.network=web
       --providers.docker.exposedbydefault=false
       --providers.file.directory=/etc/traefik
       --entrypoints.webhttp.address=:80
@@ -29,8 +28,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./certs:/certs
       - ./traefik/config:/etc/traefik
-    networks:
-      - web
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dashboard.rule=Host(`${TRAEFIK_HOST_URL}`)"
@@ -56,15 +53,11 @@ services:
         define('GRAPHQL_JWT_AUTH_CORS_ENABLE', true);
         define('WP_SITEURL', '${WP_SITEURL}');
         define('WP_HOME', '${WP_HOMEURL}');
-        // Increase PHP timeouts
         @ini_set('max_execution_time', '120');
         @ini_set( 'upload_max_size' , '128M' );
         @ini_set( 'post_max_size', '128M');
     volumes:
       - wordpress:/var/www/html
-    networks:
-      - web
-      - backend
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.wordpress.rule=Host(`${WP_HOST_URL}`)"
@@ -79,13 +72,6 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - db:/var/lib/mysql
-    networks:
-      - backend
-
-networks:
-  web:
-  backend:
-    internal: true
 
 volumes:
   wordpress:
