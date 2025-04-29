@@ -21,8 +21,6 @@ services:
       --entrypoints.webhttp.address=:80
       --entrypoints.webhttps.address=:443
       --entrypoints.webhttps.http.tls=true
-      # --entrypoints.webhttps.http.tls.domains[0].main=jwwhangbo.com
-      # --entrypoints.webhttps.http.tls.domains[0].sans=wp.jwwhangbo.com,traefik.jwwhangbo.com
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
@@ -35,7 +33,24 @@ services:
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.middlewares=auth"
       - "traefik.http.middlewares.auth.basicauth.users=${TREAFIK_USERNAME}:${TRAEFIK_ENCRY_PW}"
-      # - "traefik.http.routers.dashboard.tls=true"
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/.docker/config.json:/config.json
+    command: |
+      --interval 30
+      --label-enable=true
+  webserver:
+    image: jwhangbo/v2:latest
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.webserver.rule=Host(`jwwhangbo.com`)"
+      - "traefik.http.routers.webserver.entrypoints=webhttps"
+      - "traefik.http.services.webserver.loadbalancer.server.port=3000"
+      - "com.centurylinklabs.watchtower.enable=true"
+
   wordpress:
     image: wordpress
     restart: always
