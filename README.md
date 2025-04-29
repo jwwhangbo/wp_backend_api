@@ -9,5 +9,6 @@ Includes:
 Traefik is setup to handle http/https proxying and routing requests to different services based on trailing urls(e.g. admin., api.). 
 
 watchtower monitors for changes in the docker hub repository for the webserver and rolls out changes when there is a new version available.
+Github actions is setup to build and push to docker hub on push to main
 
 Hosted on Google Cloud Platform's Compute engine(E2 small).
