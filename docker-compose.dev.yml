@@ -1,0 +1,42 @@
+name: wp_swarm
+
+services:
+  wordpress:
+    image: wordpress
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      WORDPRESS_DB_NAME: wordpressdb
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_ENVIRONMENT_TYPE', '${ENVIRONMENT:-production}');
+        define('WP_DEVELOPMENT_MODE', '${WP_DEVELOPMENT_MODE:-false}');
+        define('HEADLESS_SECRET', '${HEADLESS_SECRET}');
+        define('HEADLESS_URL', '${HEADLESS_URL}');
+        define('GRAPHQL_JWT_AUTH_SECRET_KEY', '${GRAPHQL_JWT_AUTH_SECRET_KEY}');
+        define('GRAPHQL_JWT_AUTH_CORS_ENABLE', true);
+        define('WP_SITEURL', '${WP_SITEURL}');
+        define('WP_HOME', '${WP_HOMEURL}');
+        @ini_set('max_execution_time', '120');
+        @ini_set( 'upload_max_size' , '128M' );
+        @ini_set( 'post_max_size', '128M');
+    volumes:
+      - wordpress:/var/www/html
+      - ./plugins:/var/www/html/wp-content/plugins
+      - ./themes:/var/www/html/wp-content/themes
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: wordpressdb
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - db:/var/lib/mysql
+
+volumes:
+  wordpress:
+  db:
